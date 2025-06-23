@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import ModeSelect from "../../components/ModeSelect";
+import ModeSelect from "~/components/ModeSelect";
 function AppBar() {
 	return (
 		<div>
@@ -8,7 +8,7 @@ function AppBar() {
 				sx={{
 					backgroundColor: "primary.light",
 					with: "100%",
-					height: (theme) => theme.trelloCustom.appBarHeight,
+					height: (theme) => theme.trello.appBarHeight,
 					display: "flex",
 					alignItems: "center",
 				}}
