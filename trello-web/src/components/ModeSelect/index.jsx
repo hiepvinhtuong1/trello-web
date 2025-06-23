@@ -20,7 +20,7 @@ function ModeSelect() {
 		<FormControl size="small" sx={{ minWidth: 120 }}>
 			<InputLabel
 				id="label-select-dark-light-mode"
-				sx={{ color: "white", "&.Mui-focused": { color: "white" } }}
+				sx={{ color: "black", "&.Mui-focused": { color: "black" } }}
 			>
 				Mode
 			</InputLabel>
