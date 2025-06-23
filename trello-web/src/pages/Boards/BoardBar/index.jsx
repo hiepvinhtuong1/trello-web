@@ -6,7 +6,7 @@ function BoardBar() {
 				sx={{
 					backgroundColor: "primary.dark",
 					with: "100%",
-					height: (theme) => theme.trelloCustom.boardBarHeight,
+					height: (theme) => theme.trello.boardBarHeight,
 					display: "flex",
 					alignItems: "center",
 				}}
