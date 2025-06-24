@@ -35,7 +35,7 @@ function Profile() {
 						<Avatar
 							alt="Tuan Hiep Bui"
 							src=""
-							sx={{ width: 30, height: 30 }}
+							sx={{ width: 36, height: 36 }}
 						/>
 					</IconButton>
 				</Tooltip>
