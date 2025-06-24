@@ -1,4 +1,4 @@
-import { cyan, deepOrange, red, teal } from '@mui/material/colors'
+import { cyan, deepOrange, teal } from '@mui/material/colors'
 import { experimental_extendTheme as extendTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '58px'
