@@ -1,130 +1,17 @@
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import VpnLockIcon from "@mui/icons-material/VpnLock";
-import AddToDriveIcon from "@mui/icons-material/AddToDrive";
-import BoltIcon from "@mui/icons-material/Bolt";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-const MENU_STYLES = {
-	color: "primary.main",
-	backgroundColor: "white",
-	border: "none",
-	padding: "5px",
-	borderRadius: "4px",
-	"& .MuiSvgIcon-root": {
-		color: "primary.main",
-	},
-	"&:hover": {
-		backgroundColor: "primary.50",
-	},
-};
-
 function BoardBar() {
 	return (
 		<div>
 			<Box
 				sx={{
-					px: 2,
+					backgroundColor: "primary.dark",
 					with: "100%",
 					height: (theme) => theme.trello.boardBarHeight,
 					display: "flex",
 					alignItems: "center",
-					justifyContent: "space-between",
-					gap: 2,
-					overflowX: "auto",
-					borderTop: "1px solid #00bfa5",
 				}}
 			>
-				<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-					<Chip
-						sx={MENU_STYLES}
-						icon={<DashboardIcon />}
-						label="TuanHiepDev"
-						clickable
-					/>
-					<Chip
-						sx={MENU_STYLES}
-						icon={<VpnLockIcon />}
-						label="Public/Private/Workspace"
-						clickable
-					/>
-
-					<Chip
-						sx={MENU_STYLES}
-						icon={<AddToDriveIcon />}
-						label="Add To Google Drive"
-						clickable
-					/>
-					<Chip
-						sx={MENU_STYLES}
-						icon={<BoltIcon />}
-						label="Automation"
-						clickable
-					/>
-					<Chip
-						sx={MENU_STYLES}
-						icon={<FilterListIcon />}
-						label="Filters	"
-						clickable
-					/>
-				</Box>
-				<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-					<Button variant="outlined" startIcon={<PersonAddIcon />}>
-						Invite
-					</Button>
-					<AvatarGroup
-						max={4}
-						sx={{
-							"& .MuiAvatar-root": {
-								width: 34,
-								height: 34,
-								fontSize: "0.875rem",
-							},
-						}}
-					>
-						<Tooltip title="tuanhiepdev">
-							<Avatar
-								alt="tuanhiepdev"
-								src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/480820435_1696223384640262_7602083508037131633_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=unhI76o5YsMQ7kNvwGquS4x&_nc_oc=AdkNXfTay-ygWNhYcwEolJCT1zA-2K4VnmxUMr9T34JDY9gfHYF3yka26CWgkAeKtjo&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=PjTEWmlI_rm9TmbE14uagA&oh=00_AfMXetLeARu6anJxgur589JfuZNqyWG3il1bpyic6MKdTg&oe=6860268A"
-							/>
-						</Tooltip>
-						<Tooltip title="tuanhiepdev">
-							<Avatar
-								alt="tuanhiepdev"
-								src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/480820435_1696223384640262_7602083508037131633_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=unhI76o5YsMQ7kNvwGquS4x&_nc_oc=AdkNXfTay-ygWNhYcwEolJCT1zA-2K4VnmxUMr9T34JDY9gfHYF3yka26CWgkAeKtjo&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=PjTEWmlI_rm9TmbE14uagA&oh=00_AfMXetLeARu6anJxgur589JfuZNqyWG3il1bpyic6MKdTg&oe=6860268A"
-							/>
-						</Tooltip>
-						<Tooltip title="tuanhiepdev">
-							<Avatar
-								alt="tuanhiepdev"
-								src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/480820435_1696223384640262_7602083508037131633_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=unhI76o5YsMQ7kNvwGquS4x&_nc_oc=AdkNXfTay-ygWNhYcwEolJCT1zA-2K4VnmxUMr9T34JDY9gfHYF3yka26CWgkAeKtjo&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=PjTEWmlI_rm9TmbE14uagA&oh=00_AfMXetLeARu6anJxgur589JfuZNqyWG3il1bpyic6MKdTg&oe=6860268A"
-							/>
-						</Tooltip>
-						<Tooltip title="tuanhiepdev">
-							<Avatar
-								alt="tuanhiepdev"
-								src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/480820435_1696223384640262_7602083508037131633_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=unhI76o5YsMQ7kNvwGquS4x&_nc_oc=AdkNXfTay-ygWNhYcwEolJCT1zA-2K4VnmxUMr9T34JDY9gfHYF3yka26CWgkAeKtjo&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=PjTEWmlI_rm9TmbE14uagA&oh=00_AfMXetLeARu6anJxgur589JfuZNqyWG3il1bpyic6MKdTg&oe=6860268A"
-							/>
-						</Tooltip>
-						<Tooltip title="tuanhiepdev">
-							<Avatar
-								alt="tuanhiepdev"
-								src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/480820435_1696223384640262_7602083508037131633_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=unhI76o5YsMQ7kNvwGquS4x&_nc_oc=AdkNXfTay-ygWNhYcwEolJCT1zA-2K4VnmxUMr9T34JDY9gfHYF3yka26CWgkAeKtjo&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=PjTEWmlI_rm9TmbE14uagA&oh=00_AfMXetLeARu6anJxgur589JfuZNqyWG3il1bpyic6MKdTg&oe=6860268A"
-							/>
-						</Tooltip>
-						<Tooltip title="tuanhiepdev">
-							<Avatar
-								alt="tuanhiepdev"
-								src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/480820435_1696223384640262_7602083508037131633_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=unhI76o5YsMQ7kNvwGquS4x&_nc_oc=AdkNXfTay-ygWNhYcwEolJCT1zA-2K4VnmxUMr9T34JDY9gfHYF3yka26CWgkAeKtjo&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=PjTEWmlI_rm9TmbE14uagA&oh=00_AfMXetLeARu6anJxgur589JfuZNqyWG3il1bpyic6MKdTg&oe=6860268A"
-							/>
-						</Tooltip>
-					</AvatarGroup>
-				</Box>
+				Board Bar
 			</Box>
 		</div>
 	);
