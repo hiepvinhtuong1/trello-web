@@ -37,7 +37,6 @@ function BoardBar() {
 					justifyContent: "space-between",
 					gap: 2,
 					overflowX: "auto",
-					borderBottom: "1px solid white",
 					bgcolor: (theme) =>
 						theme.palette.mode === "dark" ? "#34495e" : "#1976d2",
 				}}
@@ -97,6 +96,11 @@ function BoardBar() {
 								height: 34,
 								fontSize: "0.875rem",
 								border: "none",
+								color: "white",
+								cursor: "pointer",
+								"&:first-of-type": {
+									bgcolor: "#a4b0be",
+								},
 							},
 						}}
 					>
