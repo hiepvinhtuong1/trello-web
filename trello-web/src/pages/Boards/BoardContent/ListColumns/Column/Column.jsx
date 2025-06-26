@@ -17,8 +17,10 @@ import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentPaste from "@mui/icons-material/ContentPaste";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
-import ListCards from "./ListCards/ListCards"; // Assuming ListCards is in the same directory
-function Column() {
+import ListCards from "./ListCards/ListCards";
+import { mapOrder } from "~/utils/sort";
+
+function Column({ column }) {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event) => {
@@ -27,6 +29,7 @@ function Column() {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+	const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
 	return (
 		<div>
 			{/* Box Column 01 */}
@@ -63,7 +66,7 @@ function Column() {
 							fontSize: "1rem",
 						}}
 					>
-						Column Item
+						{column?.title}
 					</Typography>
 					<Box>
 						<Tooltip title="More options">
@@ -138,7 +141,7 @@ function Column() {
 				{/* Box Column Header */}
 
 				{/*  List Card */}
-				<ListCards />
+				<ListCards cards={orderedCards} />
 				{/*  List Card */}
 
 				{/* Box Column Footer */}
