@@ -23,14 +23,24 @@ import { CSS } from "@dnd-kit/utilities";
 import { mapOrder } from "~/utils/sort";
 
 function Column({ column }) {
-	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id: column._id, data: { ...column } });
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: column._id, data: { ...column } });
 
 	const dndKitColumnStyle = {
 		touchAction: "none",
 		// Nếu sử dụng dạng CSS.Transform lỗi kiểu strech
 		transform: CSS.Translate.toString(transform),
 		transition,
+		//Chiều cao phải luôn max 100% vì nếu không sẽ lỗi lúc kéo column ngắn qua một column dài thì phải kéo kéo ở khu vực giữa giữa rất khó chịu.
+		//Lưu ý lúc này phải kết hợp với {...listeners} năm ở Box chứ không phải ở div ngoài cùng để tránh trường hợp kéo vào vùng xanh
+		height: "100%",
+		opacity: isDragging ? 0.5 : undefined,
 	};
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -44,12 +54,10 @@ function Column({ column }) {
 
 	const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
 	return (
-		<div>
+		//Phải bọc div ở ngoài cùng vì vấn đề của column khi kéo thả sẽ có bug kiểu flickering
+		<div ref={setNodeRef} style={dndKitColumnStyle} {...attributes}>
 			{/* Box Column 01 */}
 			<Box
-				ref={setNodeRef}
-				style={dndKitColumnStyle}
-				{...attributes}
 				{...listeners}
 				sx={{
 					minWidth: "300px",
