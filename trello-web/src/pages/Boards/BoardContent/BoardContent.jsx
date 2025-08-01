@@ -11,13 +11,19 @@ import {
 	DragOverlay,
 	defaultDropAnimationSideEffects,
 	closestCorners,
+	pointerWithin,
+	rectIntersection,
+	getFirstCollision,
 } from "@dnd-kit/core";
 import { mapOrder } from "~/utils/sort";
-import { useEffect, useState } from "react";
+import { generatePlaceholderCard } from "~/utils/formatters";
+
+import { useEffect, useRef, useState } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import Column from "./ListColumns/Column/Column";
 import TrelloCard from "./ListColumns/Column/ListCards/Card/Card";
+import { useCallback } from "react";
 
 const ACTIVE_DRAG_ITEM_TYPE = {
 	COLUMN: "ACTIVE_DRAG_ITEM_TYPE_COLUMN",
@@ -60,6 +66,8 @@ function BoardContent({ board }) {
 	const [activeDragItemData, setActiveDragItemData] = useState(null);
 	const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] =
 		useState(null);
+	//Điểm va chạm cuối cùng (xử lý thuật toán phát hiện va chạm, video37)
+	const lastOverId = useRef(null);
 
 	useEffect(() => {
 		setOrderedColumns(
@@ -117,6 +125,14 @@ function BoardContent({ board }) {
 					(card) => card._id !== activeDraggingCardID
 				);
 
+				// thêm Placeholder Card nếu Column rỗng: bị kéo hết Card đi, không còn cái nào nữa
+				if (isEmpty(nextActiveColumn?.cards)) {
+					console.log("card cuoosi cung bi keo di");
+					nextActiveColumn.cards = [
+						generatePlaceholderCard(nextActiveColumn),
+					];
+				}
+
 				// Cập nhật lại mảng cardOrderIds cho chuẩn dữ liệu
 				nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(
 					(card) => card._id
@@ -140,12 +156,17 @@ function BoardContent({ board }) {
 					rebuild_activeDraggingCardData
 				);
 
+				// xóa Placeholder Card đi nếu nó đang tồn tại
+				nextOverColumn.cards = nextOverColumn.cards.filter(
+					(card) => !card?.FE_PlaceholderCard
+				);
+
 				// Cập nhật lại mảng cardOrderIds cho chuẩn dữ liệu
 				nextOverColumn.cardOrderIds = nextOverColumn.cards.map(
 					(card) => card._id
 				);
 			}
-
+			console.log("nextColumns: ", nextColumns);
 			return nextColumns;
 		});
 	};
@@ -218,7 +239,6 @@ function BoardContent({ board }) {
 
 		// Xử lý kéo thả Card
 		if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
-			console.log("Hành dộng kéo thả Card - Tạm thời không làm gì cả");
 			//activeDraggingCardID: Là cái card đang được kéo
 			const {
 				id: activeDraggingCardID,
@@ -308,8 +328,6 @@ function BoardContent({ board }) {
 					newColumnIndex
 				);
 				const dndOrderedColumnIds = dndOrderedColumn.map((c) => c._id);
-				console.log("dndOrderedColumn", dndOrderedColumn);
-				console.log("dndOrderedColumnIds", dndOrderedColumnIds);
 
 				// cập nhật lại state coulumns ban đầu sau khi đã kéo thả
 				setOrderedColumns(dndOrderedColumn);
@@ -331,6 +349,59 @@ function BoardContent({ board }) {
 			},
 		}),
 	};
+
+	// custom lại thuật toán phát hiện va chạm, tối ưu cho việc kéo thả card giữa nhiều columns
+	const collisionDetectionStrategy = useCallback(
+		(args) => {
+			// Trường hợp kéo column thì dùng thuật toán closetColumn
+			if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
+				return closestCorners({ ...args });
+			}
+
+			//Tìm các điểm giao nhau, va chạm - intersections với con trỏ
+			const pointerIntersections = pointerWithin(args);
+
+			if (!pointerIntersections?.length) return;
+
+			const intersections =
+				pointerIntersections?.length > 0
+					? pointerIntersections
+					: rectIntersection(args);
+
+			// Tìm overId đầu tiên trong đám intersections ở trên
+			let overId = getFirstCollision(intersections, "id");
+			if (overId) {
+				// Nếu over là column thfi sẽ tìm tới cái cardId gần nhất bên trong khu vực
+				// va chạm đó dựa vào thuật toán phát hiện va chạm closeCenter hoặc closeCorners đều được
+
+				const checkColumn = orderedColumns.find(
+					(column) => column._id === overId
+				);
+
+				if (checkColumn) {
+					overId = closestCorners({
+						...args,
+						droppableContainers: args.droppableContainers.filter(
+							(container) => {
+								return (
+									container.id !== overId &&
+									checkColumn?.cardOrderIds?.includes(
+										container.id
+									)[0]?.id
+								);
+							}
+						),
+					});
+				}
+
+				lastOverId.current = overId;
+				return [{ id: overId }];
+			}
+
+			return lastOverId.current ? [{ id: lastOverId.current }] : [];
+		},
+		[activeDragItemType, orderedColumns]
+	);
 	return (
 		<DndContext
 			onDragStart={handleDragStart}
@@ -339,7 +410,7 @@ function BoardContent({ board }) {
 			sensors={mySensors}
 			//Thuật toán phát hiện va chạm(nếu không có nó thì card với cover lớn sẽ không kéo qua COlumn được vì
 			// lúc này nó đang bị confilict giữa card và column)
-			collisionDetection={closestCorners}
+			collisionDetection={collisionDetectionStrategy}
 		>
 			<Box
 				sx={{
