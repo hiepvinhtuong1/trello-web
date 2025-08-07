@@ -2,10 +2,7 @@ import Box from "@mui/material/Box";
 import ListColumns from "./ListColumns/ListColumns";
 import {
 	DndContext,
-	KeyboardSensor,
-	MouseSensor,
 	PointerSensor,
-	TouchSensor,
 	useSensor,
 	useSensors,
 	DragOverlay,
@@ -15,6 +12,7 @@ import {
 	rectIntersection,
 	getFirstCollision,
 } from "@dnd-kit/core";
+import { MouseSensor, TouchSensor } from "~/customLibraries/DndKitSensors";
 import { mapOrder } from "~/utils/sort";
 import { generatePlaceholderCard } from "~/utils/formatters";
 

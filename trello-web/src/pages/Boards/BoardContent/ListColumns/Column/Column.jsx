@@ -21,6 +21,9 @@ import ListCards from "./ListCards/ListCards";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { mapOrder } from "~/utils/sort";
+import TextField from "@mui/material/TextField";
+import CloseIcon from "@mui/icons-material/Close";
+import { toast } from "react-toastify";
 
 function Column({ column }) {
 	const {
@@ -53,6 +56,25 @@ function Column({ column }) {
 	};
 
 	const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
+
+	const [openNewCardForm, setOpenNewCardForm] = useState(false);
+	const toggleOpenNewCardForm = () => {
+		setOpenNewCardForm(!openNewCardForm);
+	};
+
+	const [newCardTitle, setNewCardTitle] = useState("");
+
+	const addNewCard = () => {
+		if (!newCardTitle.trim()) {
+			toast.error("Please enter a card title.");
+			return;
+		}
+		console.log(newCardTitle);
+
+		// Đóng trạng thái thêm column mới và clear input
+		toggleOpenNewCardForm();
+		setNewCardTitle("");
+	};
 	return (
 		//Phải bọc div ở ngoài cùng vì vấn đề của column khi kéo thả sẽ có bug kiểu flickering
 		<div ref={setNodeRef} style={dndKitColumnStyle} {...attributes}>
@@ -174,15 +196,122 @@ function Column({ column }) {
 					sx={{
 						height: (theme) => theme.trello.columnFooterHeight,
 						p: 2,
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
 					}}
 				>
-					<Tooltip title="Drag to move" sx={{ cursor: "pointer" }}>
-						<DragHandleIcon />
-					</Tooltip>
-					<Button startIcon={<AddCardIcon />}>Add new card</Button>
+					{!openNewCardForm ? (
+						<Box
+							sx={{
+								height: "100%",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between",
+							}}
+						>
+							<Button
+								startIcon={<AddCardIcon />}
+								onClick={toggleOpenNewCardForm}
+							>
+								Add new card
+							</Button>
+							<Tooltip
+								title="Drag to move"
+								sx={{ cursor: "pointer" }}
+							>
+								<DragHandleIcon />
+							</Tooltip>
+						</Box>
+					) : (
+						<Box
+							sx={{
+								height: "100%",
+								display: "flex",
+								gap: 1,
+								alignItems: "center",
+							}}
+						>
+							<TextField
+								label="Enter column title ..."
+								type="text"
+								size="small"
+								variant="outlined"
+								autoFocus
+								data-no-dnd="true"
+								value={newCardTitle}
+								onChange={(e) =>
+									setNewCardTitle(e.target.value)
+								}
+								sx={{
+									"& label": {
+										color: "text.primary",
+									},
+									"& input": {
+										color: (theme) =>
+											theme.palette.text.primary,
+										bgcolor: (theme) =>
+											theme.palette.mode === "dark"
+												? "#333643"
+												: "#ebecf0",
+									},
+									"& label.Mui-focused": {
+										color: (theme) =>
+											theme.palette.primary.main,
+									},
+									"& .MuiOutlinedInput-root": {
+										"& fieldset": {
+											borderColor: (theme) =>
+												theme.palette.primary.main,
+										},
+										"&:hover fieldset": {
+											borderColor: (theme) =>
+												theme.palette.primary.main,
+										},
+										"&.Mui-focused fieldset": {
+											borderColor: (theme) =>
+												theme.palette.primary.main,
+										},
+									},
+								}}
+							/>
+							<Box
+								sx={{
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+								}}
+							>
+								<Button
+									onClick={addNewCard}
+									variant="contained"
+									color="success"
+									size="small"
+									data-no-dnd="true"
+									// Để tránh trường hợp click vào button này sẽ bị dính vào sự kiện kéo thả
+									// vì nếu không có data-no-dnd thì sẽ bị lỗi kéo thả
+									sx={{
+										boxShadow: "none",
+										border: "0.5px solid ",
+										borderColor: (theme) =>
+											theme.palette.success.main,
+										"&:hover": {
+											bgcolor: (theme) =>
+												theme.palette.success.main,
+										},
+									}}
+								>
+									Add Column
+								</Button>
+								<CloseIcon
+									onClick={toggleOpenNewCardForm}
+									fontSize="small"
+									sx={{
+										color: (theme) =>
+											theme.palette.warning.light,
+										cursor: "pointer",
+									}}
+								/>
+							</Box>
+						</Box>
+					)}
 				</Box>
 				{/* Box Column Footer */}
 			</Box>

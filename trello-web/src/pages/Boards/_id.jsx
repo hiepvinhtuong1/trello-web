@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 function Board() {
 	const [board, setBoard] = useState(null);
 	useEffect(() => {
-		const boardId = "68931465acb5b0cbd3d02415";
+		const boardId = "68934fcdf09d58f68346b757";
 		fetchBoardDetailsAPI(boardId).then((board) => {
 			setBoard(board);
 		});

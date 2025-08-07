@@ -9,6 +9,7 @@ import CommentIcon from "@mui/icons-material/Comment";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
 function TrelloCard({ card }) {
 	const {
 		attributes,
@@ -50,6 +51,10 @@ function TrelloCard({ card }) {
 				minWidth: card.FE_PlaceholderCard ? "280px" : "unset",
 				pointerEvents: card.FE_PlaceholderCard ? "none" : "unset",
 				position: card.FE_PlaceholderCard ? "fixed" : "unset",
+				border: "1px solid transparent",
+				"&:hover": {
+					borderColor: (theme) => theme.palette.primary.main,
+				},
 			}}
 		>
 			{card?.cover && (
