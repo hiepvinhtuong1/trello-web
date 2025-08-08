@@ -28,7 +28,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 	CARD: "ACTIVE_DRAG_ITEM_TYPE_CARD",
 };
 
-function BoardContent({ board }) {
+function BoardContent({ board, createNewColumn, createNewCard }) {
 	const pointerSensor = useSensor(PointerSensor, {
 		// Require the mouse to move by 10 pixels before activating
 		activationConstraint: {
@@ -419,7 +419,11 @@ function BoardContent({ board }) {
 					padding: "10px 0",
 				}}
 			>
-				<ListColumns columns={orderedColumns} />
+				<ListColumns
+					columns={orderedColumns}
+					createNewColumn={createNewColumn}
+					createNewCard={createNewCard}
+				/>
 				<DragOverlay dropAnimation={customDropAnimation}>
 					{!activeDragItemType && null}
 					{activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && (

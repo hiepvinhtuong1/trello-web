@@ -25,7 +25,7 @@ import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 
-function Column({ column }) {
+function Column({ column, createNewCard }) {
 	const {
 		attributes,
 		listeners,
@@ -69,7 +69,15 @@ function Column({ column }) {
 			toast.error("Please enter a card title.");
 			return;
 		}
-		console.log(newCardTitle);
+
+		// Tạo dữ liệu mới cho card
+		const newCardData = {
+			title: newCardTitle,
+			columnId: column._id,
+		};
+
+		// Gọi API tạo mới card
+		createNewCard(newCardData);
 
 		// Đóng trạng thái thêm column mới và clear input
 		toggleOpenNewCardForm();
@@ -230,7 +238,7 @@ function Column({ column }) {
 							}}
 						>
 							<TextField
-								label="Enter column title ..."
+								label="Enter card title ..."
 								type="text"
 								size="small"
 								variant="outlined"
@@ -298,7 +306,7 @@ function Column({ column }) {
 										},
 									}}
 								>
-									Add Column
+									Add
 								</Button>
 								<CloseIcon
 									onClick={toggleOpenNewCardForm}
