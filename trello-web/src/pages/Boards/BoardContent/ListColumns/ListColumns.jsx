@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-function ListColumns({ columns }) {
+function ListColumns({ columns, createNewColumn, createNewCard }) {
 	const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
 	const toggleOpenNewColumnForm = () => {
 		setOpenNewColumnForm(!openNewColumnForm);
@@ -26,8 +26,16 @@ function ListColumns({ columns }) {
 		}
 		console.log(newColumnTitle);
 
+		const newColumnData = {
+			title: newColumnTitle,
+		};
+
+		// Gọi API tạo mới column
+		createNewColumn(newColumnData);
+
 		// Đóng trạng thái thêm column mới và clear input
 		toggleOpenNewColumnForm();
+		setNewColumnTitle("");
 	};
 	return (
 		<SortableContext
@@ -48,7 +56,13 @@ function ListColumns({ columns }) {
 				}}
 			>
 				{columns?.map((column) => {
-					return <Column key={column._id} column={column} />;
+					return (
+						<Column
+							key={column._id}
+							column={column}
+							createNewCard={createNewCard}
+						/>
+					);
 				})}
 
 				{/* Add new column */}
