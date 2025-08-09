@@ -13,7 +13,6 @@ import {
 	getFirstCollision,
 } from "@dnd-kit/core";
 import { MouseSensor, TouchSensor } from "~/customLibraries/DndKitSensors";
-import { mapOrder } from "~/utils/sort";
 import { generatePlaceholderCard } from "~/utils/formatters";
 
 import { useEffect, useRef, useState } from "react";
@@ -28,7 +27,14 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 	CARD: "ACTIVE_DRAG_ITEM_TYPE_CARD",
 };
 
-function BoardContent({ board, createNewColumn, createNewCard }) {
+function BoardContent({
+	board,
+	createNewColumn,
+	createNewCard,
+	movieColumns,
+	movieCardsInSameColumn,
+	moveCardToDifferentColumn,
+}) {
 	const pointerSensor = useSensor(PointerSensor, {
 		// Require the mouse to move by 10 pixels before activating
 		activationConstraint: {
@@ -68,9 +74,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 	const lastOverId = useRef(null);
 
 	useEffect(() => {
-		setOrderedColumns(
-			mapOrder(board?.columns, board?.columnOrderIds, "_id")
-		);
+		setOrderedColumns(board?.columns);
 	}, [board]);
 
 	const findColumnByCardId = (cardId) => {
@@ -81,7 +85,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 		);
 	};
 
-	// Function chung xử lí việc cập nhật lại state trong trường hợp di chuyển giữa các columns khác nhau
+	//Khởi tạo Function chung xử lí việc cập nhật lại state trong trường hợp di chuyển giữa các columns khác nhau
 	const moveCardBetweenDifferentColumns = (
 		overColumn,
 		overCardId,
@@ -89,7 +93,8 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 		over,
 		activeColumn,
 		activeDraggingCardID,
-		activeDraggingCardData
+		activeDraggingCardData,
+		handleFrom
 	) => {
 		setOrderedColumns((prevColumns) => {
 			// Tìm vị trí (index) của cái overCard trong colum đích (nơi activeCard sắp được thả)
@@ -125,7 +130,6 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 
 				// thêm Placeholder Card nếu Column rỗng: bị kéo hết Card đi, không còn cái nào nữa
 				if (isEmpty(nextActiveColumn?.cards)) {
-					console.log("card cuoosi cung bi keo di");
 					nextActiveColumn.cards = [
 						generatePlaceholderCard(nextActiveColumn),
 					];
@@ -136,7 +140,6 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 					(card) => card._id
 				);
 			}
-
 			if (nextOverColumn) {
 				// Kiểm tra xem card đang kéo nó có tồn tại ở overColumn chưa, nếu có thì phải xóa nó trước
 				nextOverColumn.cards = nextOverColumn?.cards.filter(
@@ -164,7 +167,18 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 					(card) => card._id
 				);
 			}
-			console.log("nextColumns: ", nextColumns);
+
+			// //Nếu function này được gọi từ handleDragEnd nghĩa là đã kéo thả xong, lúc này mới xử lí gọi API
+			if (handleFrom === "handleDragEnd") {
+				console.log("Active Column: ", nextActiveColumn);
+				console.log("Over Column: ", nextOverColumn);
+				moveCardToDifferentColumn(
+					activeDraggingCardID,
+					nextActiveColumn._id,
+					nextOverColumn._id,
+					nextColumns
+				);
+			}
 			return nextColumns;
 		});
 	};
@@ -224,7 +238,8 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 				over,
 				activeColumn,
 				activeDraggingCardID,
-				activeDraggingCardData
+				activeDraggingCardData,
+				"handleDragOver"
 			);
 		}
 	};
@@ -232,9 +247,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 	//Trigger khi kết thúc hành động  kéo một phần tử => hành động thả (drop)
 	const handleDragEnd = (event) => {
 		const { active, over } = event;
-
 		if (!over || !active) return;
-
 		// Xử lý kéo thả Card
 		if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
 			//activeDraggingCardID: Là cái card đang được kéo
@@ -254,15 +267,15 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 
 			if (oldColumnWhenDraggingCard._id !== overColumn._id) {
 				// Hành động kéo thả card ở 2 colum khác nhau
-
 				moveCardBetweenDifferentColumns(
 					overColumn,
 					overCardId,
 					active,
 					over,
-					activeColumn,
+					oldColumnWhenDraggingCard,
 					activeDraggingCardID,
-					activeDraggingCardData
+					activeDraggingCardData,
+					"handleDragEnd"
 				);
 			} else {
 				// Hành động kéo thả card trong cùng một column
@@ -272,18 +285,18 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 					oldColumnWhenDraggingCard?.cards?.findIndex(
 						(c) => c._id === activeDragItemId
 					);
-
 				// Lấy vị trí mới từ thằng over
 				const newCardIndex = overColumn?.cards?.findIndex(
 					(c) => c._id === overCardId
 				);
+
 				// dùng arrayMove của thằng dnd-kit để sắp xếp lại mảng Columns ban đầu
 				const dndOrderedCards = arrayMove(
 					oldColumnWhenDraggingCard?.cards,
 					oldCardIndex,
 					newCardIndex
 				);
-
+				const cardOrderIds = dndOrderedCards.map((card) => card._id);
 				setOrderedColumns((prevColumns) => {
 					// Clone mảng OrderedColumnsState cũ ra một cái mới để xử lý data rồi return - cập nhật lại OrderedColumnsState mới
 					const nextColumns = cloneDeep(prevColumns);
@@ -295,8 +308,12 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 
 					// cập nhật lại 2 giá trị mới là card và cardOrrderIds trong cái targetColumn
 					targetColumn.cards = dndOrderedCards;
-					targetColumn.cardOrderIds = dndOrderedCards.map(
-						(card) => card._id
+					targetColumn.cardOrderIds = cardOrderIds;
+
+					movieCardsInSameColumn(
+						dndOrderedCards,
+						cardOrderIds,
+						overColumn._id
 					);
 
 					// Trả về giá trị state mới chuẩn vị trí
@@ -325,10 +342,11 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 					oldColumnIndex,
 					newColumnIndex
 				);
-				const dndOrderedColumnIds = dndOrderedColumn.map((c) => c._id);
 
 				// cập nhật lại state coulumns ban đầu sau khi đã kéo thả
 				setOrderedColumns(dndOrderedColumn);
+
+				movieColumns(dndOrderedColumn);
 			}
 		}
 
@@ -423,6 +441,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 					columns={orderedColumns}
 					createNewColumn={createNewColumn}
 					createNewCard={createNewCard}
+					movieCardsInSameColumn={movieCardsInSameColumn}
 				/>
 				<DragOverlay dropAnimation={customDropAnimation}>
 					{!activeDragItemType && null}
