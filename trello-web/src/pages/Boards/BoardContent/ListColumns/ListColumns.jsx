@@ -24,7 +24,6 @@ function ListColumns({ columns, createNewColumn, createNewCard }) {
 			toast.error("Please enter a column title");
 			return;
 		}
-		console.log(newColumnTitle);
 
 		const newColumnData = {
 			title: newColumnTitle,
